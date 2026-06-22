@@ -27,6 +27,20 @@ def load_inventory(file_path="data/inventory.csv"):
 
 def search_recipes(ingredients_list): 
 
+    ## Clean input for API query
+    cleaned_ingredients = [i.strip().lower().replace(" ", "_") for i in ingredients_list]
+    ingredients_query = ",".join(cleaned_ingredients)
+
     ## Premium API key (multi-ingredient search)
     url = f"https://www.themealdb.com/api/json/v2/{MEALDB_API_KEY}/filter.php"
-    params = {"i": ingredients_search}
+    params = {"i": ingredients_query}
+    print(f"Searching for recipes with: {cleaned_ingredients}...")
+
+    try: 
+        response = requests.get(url, params=params)
+        data = response.json()
+        return data.get("meals", None)
+    except Exception as e: 
+        print(f"Network Error: {e}")
+        return None
+
