@@ -44,3 +44,43 @@ def search_recipes(ingredients_list):
         print(f"Network Error: {e}")
         return None
 
+## def get_recipe_instructions(meal_id):
+
+    ## Get recipe instructions by meal ID
+    url = f"https://www.themealdb.com/api/json/v2/{MEALDB_API_KEY}/lookup.php"
+    params = {"i": meal_id} ##
+
+
+## CLI Application Flow
+
+def run_app():
+    print("====Welcome to DinnersReady V1====")
+
+    ## Inventory CSV
+    inventory = load_inventory()
+
+    ## Get ingredient input from user
+    print("\nWhich ingredients would you like to use?")
+    user_raw_input = input("Enter ingredient(s) seperated by commas: ")
+
+    ## Break user input into list of ingredients for API query
+    search_targets = user_raw_input.split(",")
+
+    ## Call TheMealDB premium API to search recipes by multi-ingredients
+    meals = search_recipes(search_targets)
+
+    if meals: 
+        print(f"\nWe found {len(meals)} suggested recipes based on your ingredients.")
+        print("\nSuggested Recipes: ")
+
+        ## Number and display recipes found
+        for idx, meal in enumerate(meals, 1):
+            print(f"{idx}. {meal['strMeal']}")
+
+    ### Need to add choosing meals and displaying ingredient list and instructions ###
+    ### Manage inventory ###
+    ### Need to do use cases of mispellings, nothing submitted, etc. ###
+    ### Add intuitive menu navigation ###
+
+if __name__ == "__main__": 
+    run_app()
