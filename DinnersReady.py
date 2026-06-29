@@ -84,7 +84,29 @@ def run_app():
         for idx, meal in enumerate(meals, 1):
             print(f"{idx}. {meal['strMeal']}")
 
-    ### Need to add choosing meals and displaying ingredient list and instructions ###
+        ## Have user pick recipe based on number
+        try: 
+            choice = int(input(f"Select a recipe number (1-{len(meals)}) to view steps: "))
+            if 1 <= choice <= len(meals): 
+                selected_meal = meals[choice -1]
+                selected_meal_id = selected_meal['idMeal']
+
+                ## Get instructions
+                print(f"\nFetching data for: {selected_meal['strMeal']}...")
+                details = get_recipe_instructions(selected_meal_id)
+
+                if details: 
+                    print(f"Cooking instructions for: {details['strMeal']}")
+                    print(details['strInstructions'])
+
+            else: 
+                print("Invalid number selection.")
+        except ValueError: 
+            print("Enter a valid numbers-only choice.")
+
+    else:
+        print("\nNo meals found for those ingredient combinations.")
+
     ### Manage inventory ###
     ### Need to do use cases of mispellings, nothing submitted, etc. ###
     ### Add intuitive menu navigation ###
