@@ -5,9 +5,10 @@ from keys import MEALDB_API_KEY
 
 ## Track inventory with Pandas
 
-def load_inventory(file_path="data/inventory.csv"): 
+inventory_file = "data/inventory.csv"
 
-    ## Load ingredient inventory from CSV file, or creates a new one
+## Load ingredient inventory from CSV file, or creates a new one
+def load_inventory(file_path=inventory_file): 
 
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
@@ -22,6 +23,69 @@ def load_inventory(file_path="data/inventory.csv"):
         df = pd.DataFrame(default_data)
         df.to_csv(file_path, index=False)
         return df
+
+## Save DataFrame to the CSV
+def save_inventory(df, file_path=inventory_file): 
+    df.to_csv(file_path, index=False)
+
+## Inventory management menu function
+def manage_inventory_menu(df):
+    while True: 
+        print("\n====Inventory Management====")
+        print("1. View Current Inventory")
+        print("2. Add or Update Ingredient")
+        print("3. Back to main menu")
+
+        choice = input("Select an option (1-3): ").strip()
+
+        if choice == '1': 
+
+            ## Get list of ingredients in inventory
+            print("\nYour current ingredients: ")
+            print(df.to_string(index=False))
+
+        elif choice == '2': 
+
+            ## Get ingredient name and quantity
+            ingredient_name = input("Enter ingredient: ").strip().lower()
+            if not ingredient_name: 
+                print("Ingredient cannot be empty.")
+                continue
+
+            try: 
+                quantity = int(input("\nEnter quantity for '{ingredient_name}'"))
+                if quantity <= 0: 
+                    print("Enter a quantity greater than 0.")
+                    continue
+            except ValueError: 
+                print("Invalid quantity. Enter only whole numbers.")
+                continue
+
+            ## Check if ingredient is on CSV 
+            if ingredient_name in df['ingredient'].values:
+
+                ## Update quantity
+                df.loc[df['ingredient'] == ingredient_name, 'quantity'] += quantity
+                print(f"Updated quantity of {ingredient_name}.")
+            else: 
+                ## Add ingredient to new row
+                new_row = pd.DataFrame([{"ingredient": ingredient_name, "quantity": quantity}])
+                df = pd.concat([df, new_row], ignore_index=True)
+                print(f"Added {ingredient_name} to inventory.")
+
+            ## Save updated CSV
+            save_inventory(df)
+
+        elif choice == '3': 
+
+            ## Back to main menu
+            break
+
+        else: 
+            print("Invalid choice. Please choose 1, 2, or 3.")
+
+    return df
+
 
 ## MealDB API Integration
 
