@@ -44,7 +44,7 @@ def search_recipes(ingredients_list):
         print(f"Network Error: {e}")
         return None
 
-## def get_recipe_instructions(meal_id):
+def get_recipe_instructions(meal_id):
 
     ## Get recipe instructions by meal ID
     url = f"https://www.themealdb.com/api/json/v2/{MEALDB_API_KEY}/lookup.php"
