@@ -48,7 +48,14 @@ def get_recipe_instructions(meal_id):
 
     ## Get recipe instructions by meal ID
     url = f"https://www.themealdb.com/api/json/v2/{MEALDB_API_KEY}/lookup.php"
-    params = {"i": meal_id} ##
+    params = {"i": meal_id} 
+
+    response = requests.get(url, params=params)
+    if response.status_code == 200: 
+        data = response.json()
+        if data.get("meals"): 
+            return data["meals"][0]
+    return None
 
 
 ## CLI Application Flow
