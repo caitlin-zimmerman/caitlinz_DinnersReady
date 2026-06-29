@@ -68,8 +68,10 @@ def get_recipe_instructions(meal_id):
 def run_app():
     print("====Welcome to DinnersReady V1====")
 
-    ## Inventory CSV
+    ## Inventory CSV display
     inventory = load_inventory()
+    print("\nYour current ingredients: ")
+    print(inventory.to_string(index=False))
 
     ## Get ingredient input from user
     print("\nWhich ingredients would you like to use?")
