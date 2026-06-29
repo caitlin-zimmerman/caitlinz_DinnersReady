@@ -38,8 +38,13 @@ def search_recipes(ingredients_list):
 
     try: 
         response = requests.get(url, params=params)
+        if response.status_code != 200:
+            print(f"Connection error: {response.status_code}")
+            return None
+        
         data = response.json()
         return data.get("meals", None)
+    
     except Exception as e: 
         print(f"Network Error: {e}")
         return None
