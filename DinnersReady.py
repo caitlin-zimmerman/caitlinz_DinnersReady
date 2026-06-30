@@ -109,7 +109,13 @@ def search_recipes(ingredients_list):
             ## Return meals with matching ingredients
             if meals: 
                 return meals
-        '''     
+            
+        return None
+    
+    except Exception as e: 
+        print(f"Network Error: {e}")
+        return None
+    '''    
         ## Search by category, but only if one search term was provided and no results returned with ingredient search
         if len(cleaned_ingredients) == 1: 
             category_query = cleaned_ingredients[0]
@@ -120,12 +126,7 @@ def search_recipes(ingredients_list):
             if cat_response.status_code == 200:
                     cat_data = cat_response.json()
                     return cat_data.get("meals", None)
-        '''
-        return None   
-
-    except Exception as e: 
-        print(f"Network Error: {e}")
-        return None
+    '''
 
 def get_recipe_instructions(meal_id):
 
