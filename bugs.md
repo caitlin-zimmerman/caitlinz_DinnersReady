@@ -13,3 +13,5 @@ Allow subtraction of ingredients.
 Provide suggestion of ingredients to subtract after recipe choice. 
 
 Would like to add different methods of tracking quantity, such as ounces or cannisters for spices. 
+
+Add ability to search categories when user types in a more generic ingredient name, i.e. 'seafood', 'pasta'
