@@ -10,5 +10,5 @@ Need to modify quantity of inventory accurately.
 
 Allow subtraction of ingredients.
 
-Provide suggestion of ingredints to subtract after recipe choice. 
+Provide suggestion of ingredients to subtract after recipe choice. 
 
