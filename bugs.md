@@ -17,6 +17,8 @@ Would like to add different methods of tracking quantity, such as ounces or cann
 Add ability to search categories when user types in a more generic ingredient name, i.e. 'seafood', 'pasta'
 Make current code for searching categories functional
 
+Add ability to search by terms used within the recipe title
+
 Change the menu navigation: if a search of ingredients returns nothing, then ask if they'd like to modify search. 
 
 Change recipe list display if only one recipe is returned, currently reads as "Select a recipe number (1-1) to view..."
