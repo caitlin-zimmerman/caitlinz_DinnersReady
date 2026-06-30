@@ -53,7 +53,7 @@ def manage_inventory_menu(df):
                 continue
 
             try: 
-                quantity = int(input("\nEnter quantity for '{ingredient_name}'"))
+                quantity = int(input(f"\nEnter quantity for {ingredient_name}"))
                 if quantity <= 0: 
                     print("Enter a quantity greater than 0.")
                     continue
@@ -131,52 +131,65 @@ def get_recipe_instructions(meal_id):
 
 def run_app():
     print("====Welcome to DinnersReady V1====")
-
-    ## Inventory CSV display
     inventory = load_inventory()
-    print("\nYour current ingredients: ")
-    print(inventory.to_string(index=False))
 
-    ## Get ingredient input from user
-    print("\nWhich ingredients would you like to use?")
-    user_raw_input = input("Enter ingredient(s) seperated by commas: ")
+    while True: 
+        print("\n==== Main Menu ====")
+        print("1. Manage Inventory (View or Add Ingredients)")
+        print("2. Search Recipes by Ingredients")
+        print("3. Exit")
 
-    ## Break user input into list of ingredients for API query
-    search_targets = user_raw_input.split(",")
+        main_choice = input("Select option 1, 2, or 3: ").strip()
 
-    ## Call TheMealDB premium API to search recipes by multi-ingredients
-    meals = search_recipes(search_targets)
+        if main_choice == '1': 
+            ## Go to inventory management menu / flow
+            inventory = manage_inventory_menu(inventory)
 
-    if meals: 
-        print(f"\nWe found {len(meals)} suggested recipes based on your ingredients.")
-        print("\nSuggested Recipes: ")
+        elif main_choice == '2': 
+            ## Get ingredient input from user
+            print("\nWhich ingredients would you like to use?")
+            user_raw_input = input("Enter ingredient(s) seperated by commas: ")
 
-        ## Number and display recipes found
-        for idx, meal in enumerate(meals, 1):
-            print(f"{idx}. {meal['strMeal']}")
+            ## Break user input into list of ingredients for API query
+            search_targets = user_raw_input.split(",")
 
-        ## Have user pick recipe based on number
-        try: 
-            choice = int(input(f"Select a recipe number (1-{len(meals)}) to view steps: "))
-            if 1 <= choice <= len(meals): 
-                selected_meal = meals[choice -1]
-                selected_meal_id = selected_meal['idMeal']
+            ## Call TheMealDB premium API to search recipes by multi-ingredients
+            meals = search_recipes(search_targets)
 
-                ## Get instructions
-                print(f"\nFetching data for: {selected_meal['strMeal']}...")
-                details = get_recipe_instructions(selected_meal_id)
+            if meals: 
+                print(f"\nWe found {len(meals)} suggested recipes based on your ingredients.")
+                print("\nSuggested Recipes: ")
 
-                if details: 
-                    print(f"Cooking instructions for: {details['strMeal']}")
-                    print(details['strInstructions'])
+                ## Number and display recipes found
+                for idx, meal in enumerate(meals, 1):
+                    print(f"{idx}. {meal['strMeal']}")
 
-            else: 
-                print("Invalid number selection.")
-        except ValueError: 
-            print("Enter a valid numbers-only choice.")
+                ## Have user pick recipe based on number
+                try: 
+                    choice = int(input(f"Select a recipe number (1-{len(meals)}) to view steps: "))
+                    if 1 <= choice <= len(meals): 
+                        selected_meal = meals[choice -1]
+                        selected_meal_id = selected_meal['idMeal']
+                        details = get_recipe_instructions(selected_meal_id)
 
-    else:
-        print("\nNo meals found for those ingredient combinations.")
+                        if details: 
+                            print(f"Cooking instructions for: {details['strMeal']}")
+                            print(details['strInstructions'])
+
+                    else: 
+                        print("Invalid number selection.")
+                except ValueError: 
+                    print("Enter a valid numbers-only choice.")
+
+            else:
+                print("\nNo meals found for those ingredient combinations.")
+
+        elif main_choice == '3': 
+            ## Exit choice
+            print("\nThanks for using Dinners Ready! Goodbye.")
+            break
+        else: 
+            print("Invalid choice. Please pick 1, 2, or 3.")
 
     ### Manage inventory ###
     ### Need to do use cases of mispellings, nothing submitted, etc. ###
