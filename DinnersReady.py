@@ -31,7 +31,7 @@ def save_inventory(df, file_path=inventory_file):
 ## Inventory management menu function
 def manage_inventory_menu(df):
     while True: 
-        print("\n====Inventory Management====")
+        print("\n==== Inventory Management ====")
         print("1. View Current Inventory")
         print("2. Add or Update Ingredient")
         print("3. Back to main menu")
@@ -53,7 +53,7 @@ def manage_inventory_menu(df):
                 continue
 
             try: 
-                quantity = int(input(f"\nEnter quantity for {ingredient_name}"))
+                quantity = int(input(f"\nEnter quantity for {ingredient_name}: "))
                 if quantity <= 0: 
                     print("Enter a quantity greater than 0.")
                     continue
@@ -139,7 +139,7 @@ def run_app():
         print("2. Search Recipes by Ingredients")
         print("3. Exit")
 
-        main_choice = input("Select option 1, 2, or 3: ").strip()
+        main_choice = input("Select an option (1-3): ").strip()
 
         if main_choice == '1': 
             ## Go to inventory management menu / flow

@@ -8,4 +8,7 @@ Format the CLI in a way that's easier to read, especially when asking questions 
 
 Need to modify quantity of inventory accurately.
 
+Allow subtraction of ingredients.
+
+Provide suggestion of ingredints to subtract after recipe choice. 
 
