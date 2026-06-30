@@ -34,7 +34,7 @@ def manage_inventory_menu(df):
         print("\n==== Inventory Management ====")
         print("1. View Current Inventory")
         print("2. Add or Update Ingredient")
-        print("3. Back to main menu")
+        print("3. Back to Main Menu")
 
         choice = input("Select an option (1-3): ").strip()
 

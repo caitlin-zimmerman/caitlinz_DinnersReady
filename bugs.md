@@ -12,3 +12,4 @@ Allow subtraction of ingredients.
 
 Provide suggestion of ingredients to subtract after recipe choice. 
 
+Would like to add different methods of tracking quantity, such as ounces or cannisters for spices. 
