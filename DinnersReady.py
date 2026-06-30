@@ -109,7 +109,7 @@ def search_recipes(ingredients_list):
             ## Return meals with matching ingredients
             if meals: 
                 return meals
-    '''      
+        '''     
         ## Search by category, but only if one search term was provided and no results returned with ingredient search
         if len(cleaned_ingredients) == 1: 
             category_query = cleaned_ingredients[0]
