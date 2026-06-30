@@ -130,7 +130,9 @@ def get_recipe_instructions(meal_id):
 ## CLI Application Flow
 
 def run_app():
-    print("====Welcome to DinnersReady V1====")
+    print("-" * 45)
+    print("==== Welcome to DinnersReady V1 ====")
+    print('-' * 40)
     inventory = load_inventory()
 
     while True: 
