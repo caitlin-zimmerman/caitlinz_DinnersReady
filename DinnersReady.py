@@ -103,12 +103,26 @@ def search_recipes(ingredients_list):
     try: 
         response = requests.get(url, params=params)
         if response.status_code != 200:
-            print(f"Connection error: {response.status_code}")
-            return None
-        
-        data = response.json()
-        return data.get("meals", None)
-    
+            data = response.json()
+            meals = data.get("meals", None)
+
+            ## Return meals with matching ingredients
+            if meals: 
+                return meals
+            
+        ## Search by category, but only if one search term was provided and no results returned with ingredient search
+        if len(cleaned_ingredients) == 1: 
+            category_query = cleaned_ingredients[0]
+            url_category = f"https://www.themealdb.com/api/json/v2/{MEALDB_API_KEY}/filter.php"
+            params_category = {"c": category_query}
+
+            cat_response = requests.get(url_category, params=params_category)
+            if cat_response.status_code == 200:
+                    cat_data = cat_response.json()
+                    return cat_data.get("meals", None)
+
+        return None   
+
     except Exception as e: 
         print(f"Network Error: {e}")
         return None
