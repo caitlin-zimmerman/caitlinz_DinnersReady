@@ -191,9 +191,5 @@ def run_app():
         else: 
             print("Invalid choice. Please pick 1, 2, or 3.")
 
-    ### Manage inventory ###
-    ### Need to do use cases of mispellings, nothing submitted, etc. ###
-    ### Add intuitive menu navigation ###
-
 if __name__ == "__main__": 
     run_app()
