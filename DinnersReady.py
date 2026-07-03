@@ -161,9 +161,20 @@ def run_app():
                 if item.strip()
             ]
 
+            ## Fall back to inventory search if no ingredients entered
             if not search_targets: 
-                print("No valid ingredients entered. Please try again.")
-                continue
+                if not inventory.empty:
+                    all_ingredients = inventory['ingredient'].tolist()
+
+                    ## Search only top 3 ingredients in inventory for recipe suggestions
+                    if len(all_ingredients) > 3: 
+                        search_targets = all_ingredients[:3]
+                        print(f"Inventory has {len(all_ingredients)} ingredients. Using the top 3 in your list: {', '.join(search_targets)}")
+                    else:
+                        search_targets = all_ingredients
+                else: 
+                    print("No valid ingredients entered, and your inventory is empty.")
+                    continue
 
             ## Call TheMealDB premium API to search recipes by multi-ingredients
             meals = search_recipes(search_targets)
