@@ -23,3 +23,5 @@ Change the menu navigation: if a search of ingredients returns nothing, then ask
 
 Change recipe list display if only one recipe is returned, currently reads as "Select a recipe number (1-1) to view..."
 
+Integrate the ingredient inventory list with the search by ingredient function. 
+

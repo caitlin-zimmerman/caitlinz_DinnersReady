@@ -153,8 +153,17 @@ def run_app():
             print("\nWhich ingredients would you like to use?")
             user_raw_input = input("Enter ingredient(s) seperated by commas: ")
 
-            ## Break user input into list of ingredients for API query
-            search_targets = user_raw_input.split(",")
+            ## Break user input into list of ingredients for API query 
+            ## Safety check of input
+            search_targets = [
+                item.strip()
+                for item in user_raw_input.split(",")
+                if item.strip()
+            ]
+
+            if not search_targets: 
+                print("No valid ingredients entered. Please try again.")
+                continue
 
             ## Call TheMealDB premium API to search recipes by multi-ingredients
             meals = search_recipes(search_targets)
