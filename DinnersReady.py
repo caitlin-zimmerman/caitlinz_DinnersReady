@@ -34,9 +34,10 @@ def manage_inventory_menu(df):
         print("\n==== Inventory Management ====")
         print("1. View Current Inventory")
         print("2. Add or Update Ingredient")
-        print("3. Back to Main Menu")
+        print("3. Reduce or Remove Ingredient")
+        print("4. Back to Main Menu")
 
-        choice = input("Select an option (1-3): ").strip()
+        choice = input("Select an option (1-4): ").strip()
 
         if choice == '1': 
 
@@ -77,12 +78,58 @@ def manage_inventory_menu(df):
             save_inventory(df)
 
         elif choice == '3': 
+            if df.empty: 
+                print("Your inventory is empty. Nothing to remove.")
+                continue
+
+            ## Get ingredient name and quantity to reduce
+            ingredient_name = input("Enter ingredient to reduce/remove: ").strip().lower()
+
+            ## Check if ingredient is in inventory
+            if ingredient_name in df['ingredient'].values: 
+                ## Get the current quantity from the DataFrame
+                current_quantity = df.loc[df['ingredient'] == ingredient_name, 'quantity'].values[0]
+                print(f"Current quantity of {ingredient_name} is: {current_quantity}")
+
+                reduction_input = input(f"How much would you like to remove? (Enter a number or 'all' to remove completely): ").strip().lower()
+
+                if reduction_input == 'all':
+                    ## Remove the ingredient from DataFrame
+                    df = df[df['ingredient'] != ingredient_name]
+                    print(f"Removed {ingredient_name} from inventory.")
+                else: 
+                    try: 
+                        reduction_amount = int(reduction_input)
+                        if reduction_amount <= 0: 
+                            print("Please enter a number greater than 0.")
+                            continue
+
+                        if reduction_amount >= current_quantity: 
+                            ## If trying to reduce more than or equal to quantity, drop the ingredient from DataFrame
+                            df = df[df['ingredient'] != ingredient_name]
+                            print(f"You used up all of your {ingredient_name}. Removed from inventory.")
+                        else: 
+                            ## Subtract the reduction amount from the current quantity
+                            df.loc[df['ingredient'] == ingredient_name, 'quantity'] -= reduction_amount
+                            new_quantity = current_quantity - reduction_amount
+                            print(f"Reduced {ingredient_name} by {reduction_amount}. New quantity is: {new_quantity}")
+
+                    except ValueError:
+                        print("Invalid input. Please enter a whole number or 'all' to remove completely.")
+                        continue
+
+                    ## Save updated CSV
+                    save_inventory(df)
+            else: 
+                print(f"{ingredient_name} is not in your inventory.")
+
+        elif choice == '4': 
 
             ## Back to main menu
             break
 
         else: 
-            print("Invalid choice. Please choose 1, 2, or 3.")
+            print("Invalid choice. Please choose 1, 2, 3, or 4.")
 
     return df
 
