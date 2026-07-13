@@ -110,4 +110,49 @@ st.write("Enter ingredients you have on hand, separated by commas (e.g., chicken
 search_input = st.text_input("Enter ingredients:", placeholder="e.g., chicken, tomato, garlic")
 
 ## Origianl CLI rules for the search input
-search_input = [item.strip() for item in search_input.split(",") if item.strip()]
+search_targets = [item.strip() for item in search_input.split(",") if item.strip()]
+
+## Grab top 3 ingredients from inventory if no input is provided
+if not search_targets: 
+    if not inventory_df.empty: 
+        all_items = inventory_df['ingredient'].tolist()
+        search_targets = all_items[:3] if len(all_items) > 3 else all_items
+    else: 
+        search_targets = []
+
+## Search button
+if st.button("Search Recipes", type="primary"): 
+    if search_targets: 
+        st.write(f"Searching recpies with ingredients: '{', '.join(search_targets)}'...")
+
+        meals = search_recipes(search_targets)
+
+        if meals: 
+            st.success(f"Found {len(meals)} recipes!")
+            
+            ## Display recipe cards
+            for meal in meals: 
+                ## Acordian box to open recipe details
+                with st.expander(f"Click to view: {meal['strMeal']}"):
+                    st.write("Getting the recipe details...")
+                    
+                    details = get_recipe_instructions(meal['idMeal'])
+
+                    if details: 
+                        ## Layout text on left and image on right
+                        col1, col2 = st.columns([3, 1])
+
+                        with col1: 
+                            st.markdown(f"### Directions for {details['strMeal']}")
+                            st.write
+
+                        with col2: 
+                            if details.get("strMealThumb"): 
+                                st.image(details["strMealThumb"], use_container_width=True)
+
+                    else: 
+                        st.error("Could not retrieve recipe details. Please try again later.")
+            else: 
+                st.warning("No recipes found with the provided ingredients. Try simplifying your search terms.")
+        else: 
+            st.error("Cannot perform search. Your inventory is empty. Please add ingredients to your inventory or enter them manually.")
