@@ -65,3 +65,19 @@ def get_recipe_instructions(meal_id):
         print(f"Network Error: {e}")
         return None
     
+## Pull the current inventory 
+inventory_df = load_inventory()
+
+## Inventory table and sidebar
+with st.sidebar:
+    st.header("Your Ingredient Inventory")
+
+    ## Display current inventory count
+    if inventory_df.empty:
+        st.warning("Your inventory is empty. Please add ingredients.")
+    else: 
+        st.dataframe(inventory_df, use_container_width=True, hide_index=True)
+
+
+
+
