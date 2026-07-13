@@ -144,7 +144,10 @@ if st.button("Search Recipes", type="primary"):
 
                         with col1: 
                             st.markdown(f"### Directions for {details['strMeal']}")
-                            st.write
+                            ## Clean recipe instructions text
+                            recipe_text = str(details.get("strInstructions", "No instructions available."))
+                            ## Use markdown to avoid showing Streamlit docs
+                            st.markdown(recipe_text)
 
                         with col2: 
                             if details.get("strMealThumb"): 
