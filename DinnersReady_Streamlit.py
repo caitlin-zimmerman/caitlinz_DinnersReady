@@ -76,23 +76,27 @@ with st.sidebar:
     ## Display current inventory count
     if inventory_df.empty:
         st.warning("Your inventory is empty. Please add ingredients.")
+        display_df = pd.DataFrame(columns=["Ingredient", "Quantity"])
     else: 
-        st.dataframe(inventory_df, use_container_width=True, hide_index=True)
+        display_df = inventory_df.rename(columns={"ingredient": "Ingredient", "quantity": "Quantity"})
 
     ## Add interactivity to table
-    edited_df = st.data_editor(inventory_df, use_container_width=True, hide_index=True, num_rows="dynamic", column_config={
+    edited_df = st.data_editor(display_df, use_container_width=True, hide_index=True, num_rows="dynamic", column_config={
         "ingredient": st.column_config.TextColumn("Ingredient Name", required=True),
         "quantity": st.column_config.NumberColumn("Quantity", min_value=0, default=1, required=True)
     })
 
     ## Save changes to inventory
-    if not edited_df.equals(inventory_df):
+    if not edited_df.equals(display_df):
+        ## Rename columns back to original for saving
+        final_df = edited_df.rename(columns={"Ingredient": "ingredient", "Quantity": "quantity"})
+
         ## Remove rows with empty ingredient names
-        edited_df = edited_df.dropna(subset=["ingredient"]) 
+        final_df = final_df.dropna(subset=["ingredient"]) 
         ## Remove rows with zero quantity
-        edited_df = edited_df[edited_df["quantity"] > 0]
+        final_df = final_df[final_df["quantity"] > 0]
 
         ## Save and refresh the table
-        save_inventory(edited_df)
+        save_inventory(final_df)
         st.success("Inventory updated successfully!")
         st.rerun()
