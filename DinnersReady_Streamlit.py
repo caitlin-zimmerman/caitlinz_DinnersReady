@@ -71,6 +71,7 @@ inventory_df = load_inventory()
 ## Inventory table and sidebar
 with st.sidebar:
     st.header("Your Ingredient Inventory")
+    st.write("Double-click to add or remove ingredients to keep track of what you have on hand.")
 
     ## Display current inventory count
     if inventory_df.empty:
@@ -78,6 +79,20 @@ with st.sidebar:
     else: 
         st.dataframe(inventory_df, use_container_width=True, hide_index=True)
 
+    ## Add interactivity to table
+    edited_df = st.data_editor(inventory_df, use_container_width=True, hide_index=True, num_rows="dynamic", column_config={
+        "ingredient": st.column_config.TextColumn("Ingredient Name", required=True),
+        "quantity": st.column_config.NumberColumn("Quantity", min_value=0, default=1, required=True)
+    })
 
+    ## Save changes to inventory
+    if not edited_df.equals(inventory_df):
+        ## Remove rows with empty ingredient names
+        edited_df = edited_df.dropna(subset=["ingredient"]) 
+        ## Remove rows with zero quantity
+        edited_df = edited_df[edited_df["quantity"] > 0]
 
-
+        ## Save and refresh the table
+        save_inventory(edited_df)
+        st.success("Inventory updated successfully!")
+        st.rerun()
