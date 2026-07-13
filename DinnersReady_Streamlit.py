@@ -100,3 +100,14 @@ with st.sidebar:
         save_inventory(final_df)
         st.success("Inventory updated successfully!")
         st.rerun()
+
+## Main display area for recipe search
+st.header("What's for Dinner Tonight?")
+st.subheader("Search for recipes based on your available ingredients.")
+st.write("Enter ingredients you have on hand, separated by commas (e.g., chicken, tomato, garlic).")
+
+## Text input for ingredients
+search_input = st.text_input("Enter ingredients:", placeholder="e.g., chicken, tomato, garlic")
+
+## Origianl CLI rules for the search input
+search_input = [item.strip() for item in search_input.split(",") if item.strip()]
