@@ -107,7 +107,9 @@ st.subheader("Search for recipes based on your available ingredients.")
 st.write("Enter ingredients you have on hand, separated by commas (e.g., chicken, tomato, garlic).")
 
 ## Text input for ingredients
-search_input = st.text_input("Enter ingredients:", placeholder="e.g., chicken, tomato, garlic")
+with st.form("recipe_search_form"):
+    search_input = st.text_input("Enter ingredients:", placeholder="e.g., chicken, tomato, garlic")
+    submitted = st.form_submit_button("Search Recipes", type="primary")
 
 ## Origianl CLI rules for the search input
 search_targets = [item.strip() for item in search_input.split(",") if item.strip()]
@@ -121,7 +123,7 @@ if not search_targets:
         search_targets = []
 
 ## Search button
-if st.button("Search Recipes", type="primary"): 
+if submitted: 
     if search_targets: 
         st.write(f"Searching recpies with ingredients: '{', '.join(search_targets)}'...")
 

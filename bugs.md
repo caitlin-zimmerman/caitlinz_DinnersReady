@@ -18,8 +18,6 @@ Add ability to search by terms used within the recipe title
 
 Change the menu navigation: if a search of ingredients returns nothing, then ask if they'd like to modify search. 
 
-Allow hitting 'enter' in the search box to return results without hitting the button. 
-
 Add buttons to inventory management table. Not a great UI. 
 
 Error message showing when search box left blank, but is searching top 3 ingredients in inventory so it should not show error message. 
