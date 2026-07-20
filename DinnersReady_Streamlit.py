@@ -30,7 +30,7 @@ def save_inventory(df, file_path=inventory_file):
     df.to_csv(file_path, index=False)
 
 ## MealDB API Integration
-def search_recipes(ingredients_list): 
+def search_recipes_by_ingredient(ingredients_list): 
     ## Clean input for API query
     cleaned_ingredients = [i.strip().lower().replace(" ", "_") for i in ingredients_list]
     ingredients_query = ",".join(cleaned_ingredients)
@@ -42,11 +42,23 @@ def search_recipes(ingredients_list):
 
     try: 
         response = requests.get(url, params=params)
-        if response.status_code != 200:
-            print(f"Connection error: {response.status_code}")
-            return None
-        data = response.json()
-        return data.get("meals", None)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("meals", None)
+        return None
+    except Exception as e: 
+        print(f"Network Error: {e}")
+        return None
+    
+def search_recipes_by_title(recipe_title):
+    ## Search recipes by words in title
+    url = f"https://www.themealdb.com/api/json/v2/{MEALDB_API_KEY}/search.php"
+    params = {"s": recipe_title.strip()}
+    try: 
+        response = requests.get(url, params=params)
+        if response.status_code == 200: 
+            data = response.json()
+            return data.get("meals", None)
     except Exception as e: 
         print(f"Network Error: {e}")
         return None
@@ -103,61 +115,76 @@ with st.sidebar:
 
 ## Main display area for recipe search
 st.header("What's for Dinner Tonight?")
-st.subheader("Search for recipes based on your available ingredients.")
-st.write("Enter ingredients you have on hand, separated by commas (e.g., chicken, tomato, garlic).")
+st.divider()
+st.subheader("Search for recipes based on your available ingredients, or by recipe name.")
 
-## Text input for ingredients
+## Search form for mulitple search options
 with st.form("recipe_search_form"):
-    search_input = st.text_input("Enter ingredients:", placeholder="e.g., chicken, tomato, garlic")
-    submitted = st.form_submit_button("Search Recipes", type="primary")
-
-## Origianl CLI rules for the search input
-search_targets = [item.strip() for item in search_input.split(",") if item.strip()]
-
-## Grab top 3 ingredients from inventory if no input is provided
-if not search_targets: 
-    if not inventory_df.empty: 
-        all_items = inventory_df['ingredient'].tolist()
-        search_targets = all_items[:3] if len(all_items) > 3 else all_items
+    ## User picks how they search for recipes
+    search_type = st.radio("Search by:", options=["Ingredients", "Recipe Name"], horizontal=True)
+    
+    if search_type == "Ingredients":
+        placeholder_text = "e.g., chicken, tomato, garlic"  
     else: 
-        search_targets = []
+        placeholder_text = "e.g., curry, stew, pie"
+
+    search_input = st.text_input("Enter search terms:", placeholder=placeholder_text)
+    submitted = st.form_submit_button("Search Recipes", type="primary")
 
 ## Search button
 if submitted: 
-    if search_targets: 
-        st.write(f"Searching recpies with ingredients: '{', '.join(search_targets)}'...")
-
-        meals = search_recipes(search_targets)
-
-        if meals: 
-            st.success(f"Found {len(meals)} recipes!")
-            
-            ## Display recipe cards
-            for meal in meals: 
-                ## Acordian box to open recipe details
-                with st.expander(f"Click to view: {meal['strMeal']}"):
-                    st.write("Getting the recipe details...")
-                    
-                    details = get_recipe_instructions(meal['idMeal'])
-
-                    if details: 
-                        ## Layout text on left and image on right
-                        col1, col2 = st.columns([3, 1])
-
-                        with col1: 
-                            st.markdown(f"### Directions for {details['strMeal']}")
-                            ## Clean recipe instructions text
-                            recipe_text = str(details.get("strInstructions", "No instructions available."))
-                            ## Use markdown to avoid showing Streamlit docs
-                            st.markdown(recipe_text)
-
-                        with col2: 
-                            if details.get("strMealThumb"): 
-                                st.image(details["strMealThumb"], use_container_width=True)
-
-                    else: 
-                        st.error("Could not retrieve recipe details. Please try again later.")
-            else: 
-                st.warning("No recipes found with the provided ingredients. Try simplifying your search terms.")
+    meals = None
+    
+    ## Search by ingredients option
+    if search_type == "Ingredients": 
+        search_targets = [item.strip() for item in search_input.split(",") if item.strip()]
+        
+        ## Grab top 3 ingredients from inventory if no input is provided
+        if not search_targets: 
+            if not inventory_df.empty: 
+                all_items = inventory_df['ingredient'].tolist()
+                search_targets = all_items[:3] if len(all_items) > 3 else all_items
+        if search_targets: 
+            st.spinner(f"Searching recpies with ingredients: '{', '.join(search_targets)}'...")
+            meals = search_recipes_by_ingredient(search_targets)
         else: 
-            st.error("Cannot perform search. Your inventory is empty. Please add ingredients to your inventory or enter them manually.")
+            st.error("Enter ingredients or add ingredients to your inventory.")
+
+    ## Search by terms in recipe title
+    else: 
+        if search_input.strip(): 
+            with st.spinner(f"Searching recipe titles containing '{search_input.strip()}'..."):
+                meals = search_recipes_by_title(search_input)
+        else: 
+            st.error("Type a recipe name or keyword to search.")
+
+    ## Display results
+    if meals: 
+        st.success(f"Found {len(meals)} recipes!")
+            
+        ## Display recipe cards
+        for meal in meals: 
+            ## Acordian box to open recipe details
+            with st.expander(f"Click to view: {meal['strMeal']}"):
+                details = get_recipe_instructions(meal['idMeal'])
+
+                if details: 
+                    ## Layout text on left and image on right
+                    col1, col2 = st.columns([3, 1])
+
+                    with col1: 
+                        st.markdown(f"### Directions for {details['strMeal']}")
+                        ## Clean recipe instructions text
+                        recipe_text = str(details.get("strInstructions", "No instructions available."))
+                        ## Use markdown to avoid showing Streamlit docs
+                        st.markdown(recipe_text)
+
+                    with col2: 
+                        if details.get("strMealThumb"): 
+                            st.image(details["strMealThumb"], use_container_width=True)
+
+                else: 
+                    st.error("Could not retrieve recipe details. Please try again later.")
+    elif meals is not None: 
+        st.error("No recipes found. Try simplifying your search terms.")
+           
