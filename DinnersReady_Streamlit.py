@@ -119,15 +119,13 @@ st.divider()
 st.subheader("Search for recipes based on your available ingredients, or by recipe name.")
 
 ## Search form for mulitple search options
-with st.form("recipe_search_form"):
-    ## User picks how they search for recipes
-    search_type = st.radio("Search by:", options=["Ingredients", "Recipe Name"], horizontal=True)
-    
-    if search_type == "Ingredients":
-        placeholder_text = "e.g., chicken, tomato, garlic"  
-    else: 
-        placeholder_text = "e.g., curry, stew, pie"
+search_type = st.radio("Search by:", options=["Ingredients", "Recipe Name"], horizontal=True)
+if search_type == "Ingredients":
+    placeholder_text = "e.g., chicken, tomato, garlic"  
+else: 
+    placeholder_text = "e.g., curry, stew, pie"
 
+with st.form("recipe_search_form"):
     search_input = st.text_input("Enter search terms:", placeholder=placeholder_text)
     submitted = st.form_submit_button("Search Recipes", type="primary")
 
