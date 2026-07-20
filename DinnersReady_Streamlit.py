@@ -83,20 +83,45 @@ inventory_df = load_inventory()
 ## Inventory table and sidebar
 with st.sidebar:
     st.header("Your Ingredient Inventory")
-    st.write("Double-click to add or remove ingredients to keep track of what you have on hand.")
+    st.write("Add or remove ingredients to keep track of what you have on hand.")
+
+    ## Simple 'Add Item' at top of table
+    col1, col2 = st.columns([2, 1])
+    new_item = col1.text_input("Ingredient", placeholder="e.g. zucchini", label_visibility="collapsed")
+    new_quantity = col2.number_input("Quantity", min_value=1, value=1, step=1, label_visibility="collapsed")
+    
+    if st.button("+ Add Ingredient", use_container_width=True, type="primary"):
+        if new_item.strip(): 
+            clean_item_name = new_item.strip().lower()
+
+            ## Check if already exists in inventory
+            if not inventory_df.empty and clean_item_name in inventory_df['ingredient'].values:
+                ## Update quantity
+                inventory_df.loc[inventory_df['ingredient'] == clean_item_name, 'quantity'] += new_quantity
+            else: 
+                ## Add as new row
+                new_row = pd.DataFrame([{"ingredient": clean_item_name, "quantity": new_quantity}])
+                inventory_df = pd.concat([inventory_df, new_row], ignore_index=True)
+
+            save_inventory(inventory_df)
+            st.toast(f"Added {clean_item_name} to pantry!")
+            st.rerun()
+
+    st.divider()
 
     ## Display current inventory count
     if inventory_df.empty:
-        st.warning("Your inventory is empty. Please add ingredients.")
+        st.info("Your inventory is empty. Please add ingredients.")
         display_df = pd.DataFrame(columns=["Ingredient", "Quantity"])
     else: 
         display_df = inventory_df.rename(columns={"ingredient": "Ingredient", "quantity": "Quantity"})
 
     ## Add interactivity to table
-    edited_df = st.data_editor(display_df, use_container_width=True, hide_index=True, num_rows="dynamic", column_config={
-        "ingredient": st.column_config.TextColumn("Ingredient Name", required=True),
-        "quantity": st.column_config.NumberColumn("Quantity", min_value=0, default=1, required=True)
-    })
+    edited_df = st.data_editor(display_df, use_container_width=True, hide_index=True, num_rows="dynamic", 
+        column_config={
+            "Ingredient": st.column_config.TextColumn("Ingredient Name", required=True, width="medium"),
+            "Quantity": st.column_config.NumberColumn("Quantity", min_value=0, default=1, step=1, required=True, width="small")},
+        key="inventory_table_editor")
 
     ## Save changes to inventory
     if not edited_df.equals(display_df):
@@ -105,6 +130,8 @@ with st.sidebar:
 
         ## Remove rows with empty ingredient names
         final_df = final_df.dropna(subset=["ingredient"]) 
+        final_df["ingredient"] = final_df["ingredient"].str.strip().str.lower()
+
         ## Remove rows with zero quantity
         final_df = final_df[final_df["quantity"] > 0]
 
