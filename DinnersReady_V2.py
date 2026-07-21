@@ -4,8 +4,25 @@ import pandas as pd
 import streamlit as st
 from keys import MEALDB_API_KEY
 
-## Page title, description, and icon
+## Page title and icon
 st.set_page_config(page_title="DinnersReady", page_icon=":shallow_pan_of_food:", layout="wide")
+
+## Custom CSS for sidebar styling
+st.markdown("""
+    <style>
+        [data-testid="stSidebar"] {
+            width: 400px !important;
+        }
+        [data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {
+            padding: 4px 8px !important;
+            margin-bottom: 6px !important;
+        }
+        [data-testid="stSidebar"] button {
+            padding: 2px 8px !important;
+            min-height: 28px !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 ## Track inventory with Pandas
 inventory_file = "data/inventory.csv"
@@ -82,13 +99,13 @@ inventory_df = load_inventory()
 
 ## Inventory table and sidebar
 with st.sidebar:
-    st.header("Your Ingredient Inventory")
+    st.header("Your Ingredients")
     st.write("Add or remove ingredients to keep track of what you have on hand.")
 
     ## Simple 'Add Item' at top of table
-    col1, col2 = st.columns([2, 1])
-    new_item = col1.text_input("Ingredient", placeholder="e.g. zucchini", label_visibility="collapsed")
-    new_quantity = col2.number_input("Quantity", min_value=1, value=1, step=1, label_visibility="collapsed")
+    col1, col2 = st.columns([2.5, 1])
+    new_item = col1.text_input("Ingredient", placeholder="e.g. zucchini", label_visibility="collapsed", key="add_item_name")
+    new_quantity = col2.number_input("Quantity", min_value=1, value=1, step=1, label_visibility="collapsed", key="add_item_quantity")
     
     if st.button("+ Add Ingredient", width='stretch', type="primary"):
         if new_item.strip(): 
@@ -109,36 +126,34 @@ with st.sidebar:
 
     st.divider()
 
-    ## Display current inventory count
+    ## Display current inventory count and make edits
     if inventory_df.empty:
         st.info("Your inventory is empty. Please add ingredients.")
-        display_df = pd.DataFrame(columns=["Ingredient", "Quantity"])
     else: 
-        display_df = inventory_df.rename(columns={"ingredient": "Ingredient", "quantity": "Quantity"})
+        for idx, row in inventory_df.iterrows():
+            with st.container(border=True): 
+                c_name, c_minus, c_quantity, c_plus = st.columns([4, 1, 1, 1], vertical_alignment="center")
 
-    ## Add interactivity to table
-    edited_df = st.data_editor(display_df, width='stretch', hide_index=True, num_rows="dynamic", 
-        column_config={
-            "Ingredient": st.column_config.TextColumn("Ingredient Name", required=True, width="medium"),
-            "Quantity": st.column_config.NumberColumn("Quantity", min_value=0, default=1, step=1, required=True, width="small")},
-        key="inventory_table_editor")
+                ## Ingredient name
+                c_name.markdown(f"<span style='font-size: 14px; font-weight: 600; '>{row['ingredient'].title()}</span>", unsafe_allow_html=True)
 
-    ## Save changes to inventory
-    if not edited_df.equals(display_df):
-        ## Rename columns back to original for saving
-        final_df = edited_df.rename(columns={"Ingredient": "ingredient", "Quantity": "quantity"})
+                ## Subtract quantity
+                if c_minus.button("-", key=f"dec_{idx}", help="Decrease or delete item"):
+                    inventory_df.at[idx, 'quantity'] -= 1
+                    ## Delete item if quantity is 0
+                    if inventory_df.at[idx, 'quantity'] <= 0:
+                        inventory_df = inventory_df.drop(idx)
+                    save_inventory(inventory_df)
+                    st.rerun()
 
-        ## Remove rows with empty ingredient names
-        final_df = final_df.dropna(subset=["ingredient"]) 
-        final_df["ingredient"] = final_df["ingredient"].str.strip().str.lower()
+                ## Quantity number 
+                c_quantity.markdown(f"<p style='text-align: center; margin: 0; font-size: 13px; font-weight: bold;'>{row['quantity']}</p>", unsafe_allow_html=True)
 
-        ## Remove rows with zero quantity
-        final_df = final_df[final_df["quantity"] > 0]
-
-        ## Save and refresh the table
-        save_inventory(final_df)
-        st.success("Inventory updated successfully!")
-        st.rerun()
+                ## Add quantity
+                if c_plus.button("+", key=f"inc_{idx}", help="Increase item quantity"):
+                    inventory_df.at[idx, 'quantity'] += 1
+                    save_inventory(inventory_df)
+                    st.rerun()
 
 ## Main display area for recipe search
 st.header("What's for Dinner Tonight?")
