@@ -44,11 +44,11 @@ def search_recipes_by_ingredient(ingredients_list):
         response = requests.get(url, params=params)
         if response.status_code == 200:
             data = response.json()
-            return data.get("meals", None)
-        return None
+            return data.get("meals") or []
+        return []
     except Exception as e: 
         print(f"Network Error: {e}")
-        return None
+        return []
     
 def search_recipes_by_title(recipe_title):
     ## Search recipes by words in title
@@ -58,10 +58,10 @@ def search_recipes_by_title(recipe_title):
         response = requests.get(url, params=params)
         if response.status_code == 200: 
             data = response.json()
-            return data.get("meals", None)
+            return data.get("meals") or []
     except Exception as e: 
         print(f"Network Error: {e}")
-        return None
+        return []
     
 def get_recipe_instructions(meal_id):
     ## Get recipe instructions by meal ID
@@ -90,7 +90,7 @@ with st.sidebar:
     new_item = col1.text_input("Ingredient", placeholder="e.g. zucchini", label_visibility="collapsed")
     new_quantity = col2.number_input("Quantity", min_value=1, value=1, step=1, label_visibility="collapsed")
     
-    if st.button("+ Add Ingredient", use_container_width=True, type="primary"):
+    if st.button("+ Add Ingredient", width='stretch', type="primary"):
         if new_item.strip(): 
             clean_item_name = new_item.strip().lower()
 
@@ -117,7 +117,7 @@ with st.sidebar:
         display_df = inventory_df.rename(columns={"ingredient": "Ingredient", "quantity": "Quantity"})
 
     ## Add interactivity to table
-    edited_df = st.data_editor(display_df, use_container_width=True, hide_index=True, num_rows="dynamic", 
+    edited_df = st.data_editor(display_df, width='stretch', hide_index=True, num_rows="dynamic", 
         column_config={
             "Ingredient": st.column_config.TextColumn("Ingredient Name", required=True, width="medium"),
             "Quantity": st.column_config.NumberColumn("Quantity", min_value=0, default=1, step=1, required=True, width="small")},
@@ -148,7 +148,7 @@ st.subheader("Search for recipes based on your available ingredients, or by reci
 ## Search form for mulitple search options
 search_type = st.radio("Search by:", options=["Ingredients", "Recipe Name"], horizontal=True)
 if search_type == "Ingredients":
-    placeholder_text = "e.g., chicken, tomato, garlic"  
+    placeholder_text = "e.g., chicken, onion, garlic"  
 else: 
     placeholder_text = "e.g., curry, stew, pie"
 
@@ -210,6 +210,6 @@ if submitted:
 
                 else: 
                     st.error("Could not retrieve recipe details. Please try again later.")
-    elif meals is not None: 
-        st.error("No recipes found. Try simplifying your search terms.")
+    else: 
+        st.warning("No recipes found. Try simplifying your search terms.")
            
