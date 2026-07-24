@@ -118,8 +118,8 @@ def manage_inventory_menu(df):
                         print("Invalid input. Please enter a whole number or 'all' to remove completely.")
                         continue
 
-                    ## Save updated CSV
-                    save_inventory(df)
+                ## Save updated CSV
+                save_inventory(df)
             else: 
                 print(f"{ingredient_name} is not in your inventory.")
 
