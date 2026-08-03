@@ -1,9 +1,9 @@
-import os
-import requests
 import pandas as pd
 import streamlit as st
-from keys import MEALDB_API_KEY
+
+## Import utilities from custom modules
 from utils.inventory import load_inventory, save_inventory
+from utils.api import search_recipes_by_ingredient, search_recipes_by_title, get_recipe_instructions
 
 ## Page title and icon
 st.set_page_config(page_title="DinnersReady", page_icon=":shallow_pan_of_food:", layout="wide")
@@ -11,57 +11,6 @@ st.set_page_config(page_title="DinnersReady", page_icon=":shallow_pan_of_food:",
 ## Load custom CSS for sidebar styling
 with open("assets/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-## MealDB API Integration
-@st.cache_data(ttl=3600)
-def search_recipes_by_ingredient(ingredients_list): 
-    ## Clean input for API query
-    cleaned_ingredients = [i.strip().lower().replace(" ", "_") for i in ingredients_list]
-    ingredients_query = ",".join(cleaned_ingredients)
-
-    ## Premium API key (multi-ingredient search)
-    url = f"https://www.themealdb.com/api/json/v2/{MEALDB_API_KEY}/filter.php"
-    params = {"i": ingredients_query}
-    print(f"Searching for recipes with: {cleaned_ingredients}...")
-
-    try: 
-        response = requests.get(url, params=params)
-        if response.status_code == 200:
-            data = response.json()
-            return data.get("meals") or []
-        return []
-    except Exception as e: 
-        print(f"Network Error: {e}")
-        return []
-
-@st.cache_data(ttl=3600)    
-def search_recipes_by_title(recipe_title):
-    ## Search recipes by words in title
-    url = f"https://www.themealdb.com/api/json/v2/{MEALDB_API_KEY}/search.php"
-    params = {"s": recipe_title.strip()}
-    try: 
-        response = requests.get(url, params=params)
-        if response.status_code == 200: 
-            data = response.json()
-            return data.get("meals") or []
-    except Exception as e: 
-        print(f"Network Error: {e}")
-        return []
-
-@st.cache_data(ttl=3600)    
-def get_recipe_instructions(meal_id):
-    ## Get recipe instructions by meal ID
-    url = f"https://www.themealdb.com/api/json/v2/{MEALDB_API_KEY}/lookup.php"
-    params = {"i": meal_id} 
-    try: 
-        response = requests.get(url, params=params)
-        if response.status_code == 200: 
-            data = response.json()
-            if data.get("meals"): 
-                return data["meals"][0]
-    except Exception as e: 
-        print(f"Network Error: {e}")
-        return None
 
 ## Pull the current inventory 
 inventory_df = load_inventory()
