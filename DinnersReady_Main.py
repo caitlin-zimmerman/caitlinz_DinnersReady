@@ -28,6 +28,7 @@ st.markdown("""
 inventory_file = "data/inventory.csv"
 
 ## Load ingredient inventory from CSV file, or creates a new one
+@st.cache_data
 def load_inventory(file_path=inventory_file): 
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     if os.path.exists(file_path): 
@@ -45,8 +46,10 @@ def load_inventory(file_path=inventory_file):
 ## Save DataFrame to the CSV
 def save_inventory(df, file_path=inventory_file): 
     df.to_csv(file_path, index=False)
+    st.cache_data.clear() 
 
 ## MealDB API Integration
+@st.cache_data(ttl=3600)
 def search_recipes_by_ingredient(ingredients_list): 
     ## Clean input for API query
     cleaned_ingredients = [i.strip().lower().replace(" ", "_") for i in ingredients_list]
@@ -66,7 +69,8 @@ def search_recipes_by_ingredient(ingredients_list):
     except Exception as e: 
         print(f"Network Error: {e}")
         return []
-    
+
+@st.cache_data(ttl=3600)    
 def search_recipes_by_title(recipe_title):
     ## Search recipes by words in title
     url = f"https://www.themealdb.com/api/json/v2/{MEALDB_API_KEY}/search.php"
@@ -79,7 +83,8 @@ def search_recipes_by_title(recipe_title):
     except Exception as e: 
         print(f"Network Error: {e}")
         return []
-    
+
+@st.cache_data(ttl=3600)    
 def get_recipe_instructions(meal_id):
     ## Get recipe instructions by meal ID
     url = f"https://www.themealdb.com/api/json/v2/{MEALDB_API_KEY}/lookup.php"
@@ -93,13 +98,16 @@ def get_recipe_instructions(meal_id):
     except Exception as e: 
         print(f"Network Error: {e}")
         return None
-    
+
 ## Pull the current inventory 
 inventory_df = load_inventory()
 
 ## Initialize session state for selected ingredients
 if 'selected_ingredients' not in st.session_state:
     st.session_state.selected_ingredients = []
+
+if 'search_results' not in st.session_state:
+    st.session_state.search_results = None
 
 ## Inventory table and sidebar
 with st.sidebar:
@@ -111,7 +119,7 @@ with st.sidebar:
     new_item = col1.text_input("Ingredient", placeholder="e.g. zucchini", label_visibility="collapsed", key="add_item_name")
     new_quantity = col2.number_input("Quantity", min_value=1, value=1, step=1, label_visibility="collapsed", key="add_item_quantity")
     
-    if st.button("+ Add Ingredient", width='stretch', type="primary"):
+    if st.button("+ Add Ingredient", use_container_width=True, type="primary"):
         if new_item.strip(): 
             clean_item_name = new_item.strip().lower()
 
@@ -141,7 +149,7 @@ with st.sidebar:
                 ## Ingredient name - clickable to add to search list
                 ingredient_name = row['ingredient'].lower()
                 if c_name.button(row['ingredient'].title(), key=f"select_{idx}", 
-                                help="Click to add to recipe search", width='stretch'):
+                                help="Click to add to recipe search", use_container_width=True):
                     if ingredient_name not in st.session_state.selected_ingredients:
                         st.session_state.selected_ingredients.append(ingredient_name)
                         st.rerun()
@@ -197,21 +205,27 @@ if submitted:
             if not inventory_df.empty: 
                 all_items = inventory_df['ingredient'].tolist()
                 search_targets = all_items[:3] if len(all_items) > 3 else all_items
+
         if search_targets: 
-            st.spinner(f"Searching recpies with ingredients: '{', '.join(search_targets)}'...")
-            meals = search_recipes_by_ingredient(search_targets)
+            with st.spinner(f"Searching recpies with ingredients: '{', '.join(search_targets)}'..."):
+                st.session_state.search_results = search_recipes_by_ingredient(search_targets)
+
         else: 
             st.error("Enter ingredients or add ingredients to your inventory.")
+            st.session_state.search_results = None
 
     ## Search by terms in recipe title
     else: 
         if search_input.strip(): 
             with st.spinner(f"Searching recipe titles containing '{search_input.strip()}'..."):
-                meals = search_recipes_by_title(search_input)
+                st.session_state.search_results = search_recipes_by_title(search_input)
         else: 
             st.error("Type a recipe name or keyword to search.")
+            st.session_state.search_results = None
 
-    ## Display results
+## Display results across reruns
+if st.session_state.search_results is not None:
+    meals = st.session_state.search_results
     if meals: 
         st.success(f"Found {len(meals)} recipes!")
             
@@ -234,7 +248,7 @@ if submitted:
 
                     with col2: 
                         if details.get("strMealThumb"): 
-                            st.image(details["strMealThumb"], width='stretch')
+                            st.image(details["strMealThumb"], use_container_width=True)
 
                 else: 
                     st.error("Could not retrieve recipe details. Please try again later.")
