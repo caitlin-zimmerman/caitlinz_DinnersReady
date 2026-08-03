@@ -1,0 +1,12 @@
+/* Sidebar styling */
+[data-testid="stSidebar"] {
+            width: 400px !important;
+        }
+        [data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {
+            padding: 4px 8px !important;
+            margin-bottom: 6px !important;
+        }
+        [data-testid="stSidebar"] button {
+            padding: 2px 8px !important;
+            min-height: 28px !important;
+        }

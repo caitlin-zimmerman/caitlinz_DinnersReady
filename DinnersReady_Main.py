@@ -7,22 +7,9 @@ from keys import MEALDB_API_KEY
 ## Page title and icon
 st.set_page_config(page_title="DinnersReady", page_icon=":shallow_pan_of_food:", layout="wide")
 
-## Custom CSS for sidebar styling
-st.markdown("""
-    <style>
-        [data-testid="stSidebar"] {
-            width: 400px !important;
-        }
-        [data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {
-            padding: 4px 8px !important;
-            margin-bottom: 6px !important;
-        }
-        [data-testid="stSidebar"] button {
-            padding: 2px 8px !important;
-            min-height: 28px !important;
-        }
-    </style>
-""", unsafe_allow_html=True)
+## Load custom CSS for sidebar styling
+with open("assets/style.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 ## Track inventory with Pandas
 inventory_file = "data/inventory.csv"
