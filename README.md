@@ -26,6 +26,8 @@ You can install manually via:
 pip install streamlit pandas requests
 ```
 
+---
+
 ## How to run the app
 
 1. Open your terminal in the project directory. 
@@ -34,6 +36,8 @@ pip install streamlit pandas requests
 python -m streamlit run DinnersReady_Main.py
 ```
 3. Your default web browser will automatically open to http://localhost:8501
+
+---
 
 ## User guide
 A step-by-step walkthrough
@@ -61,9 +65,21 @@ In the main screen display:
 
 <img width="462" height="636" alt="image" src="https://github.com/user-attachments/assets/10f08ee2-f540-48a8-b864-3b2d3e357c5f" />
 
+---
 
+## Troubleshooting and common errors
 
+| Issue / Error Message | Cause | How to Fix |
+| --- | --- | --- |
+| `No recipes found` | TheMealDB search requires exact ingredient names or terms. | Try searching single or common ingredients (e.g., `chicken` instead of `chicken thighs`). | 
+| `Network Error` | Invalid API URL or missing internet connection. | Make sure keys.py is in the root folder, use public TheMealDB API key = "1", or purchase premium API key. |
+| Flashing UI or Unresponsive Buttons | Stale browser cash or leftover Python background process. | Clear Streamlit's cache from your browser and/or restart VSCode/Terminal. | 
 
+---
+
+## Known limitations
+* Inconsistent ingredient matching: Multi-ingredient filtering (premium API only) can strictly match recipes containing all search terms, but also include some recipes that don't have an ingredient that was specified. 
+* Local CSV: Pantry inventory is stored locally in data/inventory.csv. Clearing or deleting this file resets your inventory.
 
 
 
