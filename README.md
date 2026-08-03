@@ -16,7 +16,7 @@ Follow these steps to get DinnersReady running on your local machine:
 DinnersReady relies on **TheMealDB** API to fetch recipes. 
   * Create a file named keys.py in the project root folder
   * Add your TheMealDB API key formatted like this:
-      * **MEALDB_API_KEY = "1"**
+      * `MEALDB_API_KEY = "1"`
       * replace '1' with your custom premium API key if you have one
       * "1" is the public test key provided by TheMealDB. Multi-ingredient search requires purchasing a premium API key
 
