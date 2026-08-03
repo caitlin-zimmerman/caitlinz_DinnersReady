@@ -55,20 +55,21 @@ with st.sidebar:
     if inventory_df.empty:
         st.info("Your inventory is empty. Please add ingredients.")
     else: 
-        for idx, row in inventory_df.iterrows():
+        for i, (idx, row) in enumerate(inventory_df.iterrows()):
+            ing_name = str(row["ingredient"]).strip().lower().replace(" ", "_")
+
             with st.container(border=True): 
                 c_name, c_minus, c_quantity, c_plus = st.columns([4, 1, 1, 1], vertical_alignment="center")
 
                 ## Ingredient name - clickable to add to search list
-                ingredient_name = row['ingredient'].lower()
-                if c_name.button(row['ingredient'].title(), key=f"select_{idx}", 
+                if c_name.button(row['ingredient'].title(), key=f"btn_sel_{ing_name}_{i}", 
                                 help="Click to add to recipe search", width='stretch'):
-                    if ingredient_name not in st.session_state.selected_ingredients:
-                        st.session_state.selected_ingredients.append(ingredient_name)
+                    if ing_name not in st.session_state.selected_ingredients:
+                        st.session_state.selected_ingredients.append(ing_name)
                         st.rerun()
 
                 ## Subtract quantity
-                if c_minus.button("-", key=f"dec_{idx}", help="Decrease or delete item"):
+                if c_minus.button("-", key=f"btn_dec_{ing_name}_{i}", help="Decrease or delete item"):
                     inventory_df.at[idx, 'quantity'] -= 1
                     ## Delete item if quantity is 0
                     if inventory_df.at[idx, 'quantity'] <= 0:
@@ -80,7 +81,7 @@ with st.sidebar:
                 c_quantity.markdown(f"<p style='text-align: center; margin: 0; font-size: 13px; font-weight: bold;'>{row['quantity']}</p>", unsafe_allow_html=True)
 
                 ## Add quantity
-                if c_plus.button("+", key=f"inc_{idx}", help="Increase item quantity"):
+                if c_plus.button("+", key=f"btn_inc_{ing_name}_{i}", help="Increase item quantity"):
                     inventory_df.at[idx, 'quantity'] += 1
                     save_inventory(inventory_df)
                     st.rerun()
@@ -110,35 +111,37 @@ if submitted:
     st.session_state.selected_ingredients = []
     
     ## Search by ingredients option
-    if search_type == "Ingredients": 
-        search_targets = [item.strip() for item in search_input.split(",") if item.strip()]
+    with st.spinner("Searching for recipes..."):
+        if search_type == "Ingredients": 
+            search_targets = [item.strip() for item in search_input.split(",") if item.strip()]
         
-        ## Grab top 3 ingredients from inventory if no input is provided
-        if not search_targets: 
-            if not inventory_df.empty: 
-                all_items = inventory_df['ingredient'].tolist()
-                search_targets = all_items[:3] if len(all_items) > 3 else all_items
+            ## Grab top 3 ingredients from inventory if no input is provided
+            if not search_targets: 
+                if not inventory_df.empty: 
+                    all_items = inventory_df['ingredient'].tolist()
+                    search_targets = all_items[:3] if len(all_items) > 3 else all_items
 
-        if search_targets: 
-            with st.spinner(f"Searching recpies with ingredients: '{', '.join(search_targets)}'..."):
-                st.session_state.search_results = search_recipes_by_ingredient(search_targets)
+            if search_targets: 
+                with st.spinner(f"Searching recpies with ingredients: '{', '.join(search_targets)}'..."):
+                    st.session_state.search_results = search_recipes_by_ingredient(search_targets)
 
+            else: 
+                st.error("Enter ingredients or add ingredients to your inventory.")
+                st.session_state.search_results = None
+
+        ## Search by terms in recipe title
         else: 
-            st.error("Enter ingredients or add ingredients to your inventory.")
-            st.session_state.search_results = None
-
-    ## Search by terms in recipe title
-    else: 
-        if search_input.strip(): 
-            with st.spinner(f"Searching recipe titles containing '{search_input.strip()}'..."):
-                st.session_state.search_results = search_recipes_by_title(search_input)
-        else: 
-            st.error("Type a recipe name or keyword to search.")
-            st.session_state.search_results = None
+            if search_input.strip(): 
+                with st.spinner(f"Searching recipe titles containing '{search_input.strip()}'..."):
+                    st.session_state.search_results = search_recipes_by_title(search_input)
+            else: 
+                st.error("Type a recipe name or keyword to search.")
+                st.session_state.search_results = None
 
 ## Display results across reruns
 if st.session_state.search_results is not None:
     meals = st.session_state.search_results
+
     if meals: 
         st.success(f"Found {len(meals)} recipes!")
             
@@ -155,7 +158,7 @@ if st.session_state.search_results is not None:
                     with col1: 
                         st.markdown(f"### Directions for {details['strMeal']}")
                         ## Clean recipe instructions text
-                        recipe_text = str(details.get("strInstructions", "No instructions available."))
+                        recipe_text = str(details.get("strInstructions", "No instructions available.")).strip()
                         ## Use markdown to avoid showing Streamlit docs
                         st.markdown(recipe_text)
 
