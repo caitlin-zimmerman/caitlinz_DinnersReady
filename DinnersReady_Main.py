@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 import streamlit as st
 from keys import MEALDB_API_KEY
+from utils.inventory import load_inventory, save_inventory
 
 ## Page title and icon
 st.set_page_config(page_title="DinnersReady", page_icon=":shallow_pan_of_food:", layout="wide")
@@ -10,30 +11,6 @@ st.set_page_config(page_title="DinnersReady", page_icon=":shallow_pan_of_food:",
 ## Load custom CSS for sidebar styling
 with open("assets/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-## Track inventory with Pandas
-inventory_file = "data/inventory.csv"
-
-## Load ingredient inventory from CSV file, or creates a new one
-@st.cache_data
-def load_inventory(file_path=inventory_file): 
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-    if os.path.exists(file_path): 
-        return pd.read_csv(file_path)
-    else: 
-        ## Default data example
-        default_data = {
-            "ingredient": ["chicken breast", "tomato", "garlic", "onion"],
-            "quantity": [4, 4, 1, 2]
-        }
-        df = pd.DataFrame(default_data)
-        df.to_csv(file_path, index=False)
-        return df
-    
-## Save DataFrame to the CSV
-def save_inventory(df, file_path=inventory_file): 
-    df.to_csv(file_path, index=False)
-    st.cache_data.clear() 
 
 ## MealDB API Integration
 @st.cache_data(ttl=3600)
@@ -106,7 +83,7 @@ with st.sidebar:
     new_item = col1.text_input("Ingredient", placeholder="e.g. zucchini", label_visibility="collapsed", key="add_item_name")
     new_quantity = col2.number_input("Quantity", min_value=1, value=1, step=1, label_visibility="collapsed", key="add_item_quantity")
     
-    if st.button("+ Add Ingredient", use_container_width=True, type="primary"):
+    if st.button("+ Add Ingredient", width='stretch', type="primary"):
         if new_item.strip(): 
             clean_item_name = new_item.strip().lower()
 
@@ -136,7 +113,7 @@ with st.sidebar:
                 ## Ingredient name - clickable to add to search list
                 ingredient_name = row['ingredient'].lower()
                 if c_name.button(row['ingredient'].title(), key=f"select_{idx}", 
-                                help="Click to add to recipe search", use_container_width=True):
+                                help="Click to add to recipe search", width='stretch'):
                     if ingredient_name not in st.session_state.selected_ingredients:
                         st.session_state.selected_ingredients.append(ingredient_name)
                         st.rerun()
@@ -235,7 +212,7 @@ if st.session_state.search_results is not None:
 
                     with col2: 
                         if details.get("strMealThumb"): 
-                            st.image(details["strMealThumb"], use_container_width=True)
+                            st.image(details["strMealThumb"], width='stretch')
 
                 else: 
                     st.error("Could not retrieve recipe details. Please try again later.")
