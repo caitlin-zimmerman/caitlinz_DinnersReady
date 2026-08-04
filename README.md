@@ -68,9 +68,8 @@ In the main screen display:
 
 | Issue / Error Message | Cause | How to Fix |
 | --- | --- | --- |
-| "No recipes found" | TheMealDB search requires exact ingredient names or terms. | Try searching single or common ingredients (e.g., `chicken` instead of `chicken thighs`). | 
-| "No recipes found" | Invalid API URL or missing internet connection. | Make sure keys.py is in the root folder, use public TheMealDB API key = "1", or purchase premium API key. |
-| Flashing UI or Unresponsive Buttons | Stale browser cache or leftover Python background process. | Clear Streamlit's cache from your browser and/or restart VSCode/Terminal. | 
+| "No recipes found" | Either the search terms didn't match any recipes, or there was a network/API issue (invalid key, no internet). | Try single/common ingredients (e.g., `chicken` instead of `chicken thighs`). If that doesn't help, confirm `keys.py` is in the root folder and check your internet connection. |
+| Flashing UI or unresponsive buttons | Stale browser cache or leftover Python background process. | Clear Streamlit's cache from your browser and/or restart VSCode/Terminal. | 
 
 ---
 
