@@ -120,21 +120,21 @@ API calls are wrapped with `@st.cache_data(ttl=3600)` to optimize load times and
 
 ### Minor Issues
 
-### 1. TheMealDB multi-ingredient strictness: 
-* Issue: The v2 API endpoint performs strict matching across the provided ingredients. If three ingredients are provided and the recipe doesn't contain all three, the API returns `None`.
-* Mitigation: A fallback loop in `utils/api.py` searches using the first target ingredient if the multi-search returns empty.
+* 1. TheMealDB multi-ingredient strictness: 
+   * Issue: The v2 API endpoint performs strict matching across the provided ingredients. If three ingredients are provided and the recipe doesn't contain all three, the API returns `None`.
+   * Mitigation: A fallback loop in `utils/api.py` searches using the first target ingredient if the multi-search returns empty.
 
-### 2. API calls on rerun: 
-* Issue: API calls fire for every recipe result on every rerun, not just expanded cards.
+* 2. API calls on rerun: 
+   * Issue: API calls fire for every recipe result on every rerun, not just expanded cards.
 
-### 3. Error handling: 
-* Issue: Network / API failures are indistinguishable in the web app from "No recipes found." 
+* 3. Error handling: 
+   * Issue: Network / API failures are indistinguishable in the web app from "No recipes found." 
 
 ### Major Limitations
 
-### 1. Local CSV file:
-* Issue: User sessions modify the same local `data/inventory.csv` file, therefore it is not appropriate for multi-user access
-* Workaround: Replace `utils/inventory.py` with a SQL database
+* 1. Local CSV file:
+   * Issue: User sessions modify the same local `data/inventory.csv` file, therefore it is not appropriate for multi-user access
+   * Workaround: Replace `utils/inventory.py` with a SQL database
 
 ---
 
