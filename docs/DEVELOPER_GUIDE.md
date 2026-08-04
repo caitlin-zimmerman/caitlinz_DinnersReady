@@ -92,8 +92,8 @@ MEALDB_API_KEY = "1" # Replace with premium key if applicable
     * Cleans string whitespace, converts ingredient names to lowercase, aggregates
     * Uses @st.cache_data to minimize read operations
 * `save_inventory(df)`:
-    * Writes modified DataFrames back to `data/inventory.csv`
-    * Calls `st.cache_data.clear()` so that `load_inventory()` adds updated pantry rows
+    * Creates the data/ directory if it doesn't exist, then writes the DataFrame to `data/inventory.csv`
+    * Calls `load_inventory.clear()` to invalidate just the inventory cache, so that the next read reflects the update (does not affect the API caches in `utils/api.py`)
  
 ### 3. Sidebar UI and button logic ( `DinnersReady_Main.py` )
 * Renders pantry items using a loop over `inventory_df.iterrows()`
