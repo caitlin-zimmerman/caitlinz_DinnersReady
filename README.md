@@ -78,9 +78,12 @@ In the main screen display:
 ---
 
 ## Known limitations
-* Inconsistent ingredient matching: Multi-ingredient filtering (premium API only) can strictly match recipes containing all search terms, but also include some recipes that don't have an ingredient that was specified. 
+* Strict ingredient matching: Multi-ingredient filtering (premium API only) will strictly match recipes containing all search terms. Mitigation was added by falling back to the first ingredient searched if no results populate on a multi-ingredient search. 
 * Local CSV: Pantry inventory is stored locally in data/inventory.csv. Clearing or deleting this file resets your inventory.
 
+---
+
+For detailed developer documentation, system architecture notes, and module breakdowns, please refer to `docs/DEVELOPER_GUIDE.md`.
 
 
 
