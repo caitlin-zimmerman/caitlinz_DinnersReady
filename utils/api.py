@@ -51,6 +51,7 @@ def search_recipes_by_title(recipe_title):
         if response.status_code == 200: 
             data = response.json()
             return data.get("meals") or []
+        return []
     except Exception as e: 
         print(f"Network Error: {e}")
         return []

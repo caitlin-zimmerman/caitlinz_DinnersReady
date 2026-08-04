@@ -21,6 +21,7 @@ def load_inventory():
     return pd.DataFrame(columns=["ingredient", "quantity"])
 
 ## Save DataFrame to the CSV
-def save_inventory(df, file_path=INVENTORY_FILE): 
+def save_inventory(df, file_path=INVENTORY_FILE):
+    os.makedirs(os.path.dirname(file_path), exist_ok=True) 
     df.to_csv(file_path, index=False)
-    st.cache_data.clear()
+    load_inventory.clear()
