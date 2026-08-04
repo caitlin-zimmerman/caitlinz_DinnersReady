@@ -1,8 +1,7 @@
 # Developer Guide for DinnersReady
 
-This guide is designed for developers taking over, maintaining, or expanding the **DinnersReady** project. This guide will cover: 
-* High-level architecture
-* Module dependencies
+This guide is designed for developers maintaining or expanding the **DinnersReady** project. This guide will cover: 
+* High-level overview of project and architecture
 * Code execution flow
 * Known edge cases
 * Future roadmap
