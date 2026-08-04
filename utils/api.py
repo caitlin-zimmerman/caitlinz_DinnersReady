@@ -6,7 +6,7 @@ API_KEY = str(MEALDB_API_KEY).strip()
 BASE_URL = f"https://www.themealdb.com/api/json/v2/{API_KEY}"
 
 ## MealDB API Integration
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=3600, show_spinner=False)
 def search_recipes_by_ingredient(ingredients_list): 
     ## Clean input for API query
     cleaned_ingredients = [i.strip().lower() for i in ingredients_list if i.strip()]
@@ -41,7 +41,7 @@ def search_recipes_by_ingredient(ingredients_list):
         print(f"Network Error: {e}")
         return []                
 
-@st.cache_data(ttl=3600)    
+@st.cache_data(ttl=3600, show_spinner=False)    
 def search_recipes_by_title(recipe_title):
     ## Search recipes by words in title
     url = f"{BASE_URL}/search.php"
@@ -56,7 +56,7 @@ def search_recipes_by_title(recipe_title):
         print(f"Network Error: {e}")
         return []
 
-@st.cache_data(ttl=3600)    
+@st.cache_data(ttl=3600, show_spinner=False)    
 def get_recipe_instructions(meal_id):
     ## Get recipe instructions by meal ID
     url = f"{BASE_URL}/lookup.php"
