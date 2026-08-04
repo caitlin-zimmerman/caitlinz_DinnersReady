@@ -1,6 +1,6 @@
 # Developer Guide for DinnersReady
 
-This guide is designed for developers maintaining or expanding the **DinnersReady** project. This guide will cover: 
+This guide is designed for developers maintaining or expanding the DinnersReady project. This guide will cover: 
 * High-level overview of project and architecture
 * Code execution flow
 * Known edge cases
@@ -9,27 +9,27 @@ This guide is designed for developers maintaining or expanding the **DinnersRead
 ---
 
 ## Project Overview 
-**DinnersReady** is a Streamlit-based web application using TheMealDB API to help users reduce food waste by finding recipes based on the ingredients they have in their inventory. 
+DinnersReady is a Streamlit-based web application using TheMealDB API to help users reduce food waste by finding recipes based on the ingredients they have in their inventory. 
 
 ### Implemented and Deferred Specifications
 
 | Feature / Requirement | Status | Implementation Details | 
 | --- | --- | --- | 
-| **Pantry inventory management** | Implemented | Continuous CSV storage (`data/inventory.csv`) with add, quantity edit, and delete capabilities. | 
-| **Multi-ingredient API search** | Implemented | Queries the premium TheMealDB API with automatic search fallback to primary ingredients. | 
-| **Recipe title search** | Implemented | Queries TheMealDB API for keyword matches within recipe titles. | 
-| **Recipe details** | Implemented | Fetches the recipe instructions and thumbnail image via the lookup endpoint in TheMealDB API. | 
-| **Custom styling and layout** | Partially Implemented | Light custom CSS applied via `assets/style.css` for sidebar layout. | 
-| **Expiration date tracking** | Deferred | Out of scope. Would require using another API (e.g., Edamam). | 
-| **Nutritional info / macros** | Deferred | Out of scope. Would require using another API (e.g., Edamam). | 
+| Pantry inventory management | Implemented | Continuous CSV storage (`data/inventory.csv`) with add, quantity edit, and delete capabilities. | 
+| Multi-ingredient API search | Implemented | Queries the premium TheMealDB API with automatic search fallback to primary ingredients. | 
+| Recipe title search | Implemented | Queries TheMealDB API for keyword matches within recipe titles. | 
+| Recipe details | Implemented | Fetches the recipe instructions and thumbnail image via the lookup endpoint in TheMealDB API. | 
+| Custom styling and layout | Partially Implemented | Light custom CSS applied via `assets/style.css` for sidebar layout. | 
+| Expiration date tracking | Deferred | Out of scope. Would require using another API (e.g., Edamam). | 
+| Nutritional info / macros | Deferred | Out of scope. Would require using another API (e.g., Edamam). | 
 
 ---
 
 ## Environment Setup and Deployment
 
 ### Python Version and Dependencies
-* **Python version:** Tested and build on Python 3.13
-* **Core libraries:**
+* Python version: Tested and build on Python 3.13
+* Core libraries:
   * `streamlit` - Web framework
   * `pandas` - CSV parsing for inventory and data manipulation
   * `requests` - HTTP requests for TheMealDB API
@@ -107,11 +107,11 @@ API calls are wrapped with `@st.cache_data(ttl=3600)` to optimize load times and
 * `search_recipes_by_ingredient(ingredients_list)`:
     * Formats list strings into comma-separated queries
     * Sends GET request to `f"{BASE_URL}/filter.php?i={ingredients_query}"`
-    * Fallback logic: if multi-ingredient search returns `None`, it automatically retries with the first ingredient ( `ingredients_list[0]` )
+    * Fallback logic: if multi-ingredient search returns `None`, it automatically retries with the first ingredient ( `cleaned_ingredients[0]` )
 * `search_recipes_by_title(recipe_title)`:
     * Queries `f"{BASE_URL}/search.php?s={recipe_title}"` for keyword matches in recipe titles
 * `get_recipe_instructions(meal_id)`:
-    * Loaded when user expands a recipe card ( `st.expander` )
+    * Called for every returned meal on each rerun ( `st.expander` )
     * Queries `f"{BASE_URL}/lookup.php?i={meal_id}"` to retrieve cooking instructions and thumbnail images
 
 ---
@@ -123,6 +123,12 @@ API calls are wrapped with `@st.cache_data(ttl=3600)` to optimize load times and
 ### 1. TheMealDB multi-ingredient strictness: 
 * Issue: The v2 API endpoint performs strict matching across the provided ingredients. If three ingredients are provided and the recipe doesn't contain all three, the API returns `None`.
 * Mitigation: A fallback loop in `utils/api.py` searches using the first target ingredient if the multi-search returns empty.
+
+### 2. API calls on rerun: 
+* Issue: API calls fire for every recipe result on every rerun, not just expanded cards.
+
+### 3. Error handling: 
+* Issue: Network / API failures are indistinguishable in the web app from "No recipes found." 
 
 ### Major Limitations
 
