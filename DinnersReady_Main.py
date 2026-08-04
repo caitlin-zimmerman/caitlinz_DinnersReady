@@ -156,6 +156,15 @@ if st.session_state.search_results is not None:
                     col1, col2 = st.columns([3, 1])
 
                     with col1: 
+                        st.markdown(f"### Ingredients for {details['strMeal']}")
+                        ## List 20 possible ingredients and measurements
+                        for n in range(1, 21): 
+                            ingredient = details.get(f"strIngredient{n}")
+                            measure = details.get(f"strMeasure{n}")
+                            if ingredient and ingredient.strip(): 
+                                measure_text = measure.strip() if measure and measure.strip() else ""
+                                st.markdown(f"- {measure_text} {ingredient.strip()}".strip())
+                                
                         st.markdown(f"### Directions for {details['strMeal']}")
                         ## Clean recipe instructions text
                         recipe_text = str(details.get("strInstructions", "No instructions available.")).strip()
