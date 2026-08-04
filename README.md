@@ -1,19 +1,17 @@
 # DinnersReady
 
-**DinnersReady** is a recipe finder built with Python and Streamlit. DinnersReady makes it easy for you to track and modify your grocery inventory, and then use those ingredients to search delicious recipes you can make using **TheMealDB** API. 
+DinnersReady is a recipe finder built with Python and Streamlit. DinnersReady makes it easy for you to track and modify your grocery inventory, and then use those ingredients to search recipes you can make using TheMealDB API. 
 
 ---
 
 ## Prerequisites
 
-* **Python 3.13**
+* Python 3.13
 
-## Setup and installation
-
-Follow these steps to get DinnersReady running on your local machine: 
+## Setup and installation 
 
 ### 1. Set up your API key
-DinnersReady relies on **TheMealDB** API to fetch recipes. 
+DinnersReady relies on TheMealDB API to fetch recipes. 
   * Create a file named keys.py in the project root folder
   * Add your TheMealDB API key formatted like this:
       * `MEALDB_API_KEY = "1"`
@@ -40,20 +38,19 @@ python -m streamlit run DinnersReady_Main.py
 ---
 
 ## User guide
-A step-by-step walkthrough
 
 ### Step 1: Manage your ingredient inventory
 On the left sidebar: 
-* Type an ingredient name into the **Ingredient** text box (e.g., zucchini, egg, garlic).
-* Set the quantity of that ingredient and click **+ Add Ingredient**.
+* Type an ingredient name into the "Ingredient" text box (e.g., zucchini, egg, garlic).
+* Set the quantity of that ingredient and click "+ Add Ingredient".
 * Use the + and - buttons next to each pantry item to adjust quantities. Decreasing the quantity to 0 will remove the item.
 
 <img width="292" height="370" alt="image" src="https://github.com/user-attachments/assets/53182abd-c5d9-4e17-b569-1bc18b0e626d" />
 
 ### Step 2: Search for recipes
 In the main screen display: 
-* Select your preferred search method: **Ingredients** or **Recipe Name**
-* Type in 1-3 ingredients, separated by commas (*premium API needed for multi-ingredient search)
+* Select your preferred search method: Ingredients or Recipe Name
+* Type ingredients separated by commas (*premium API needed for multi-ingredient search). Search one ingredient at a time with the free test key, "1".
 * Quick fill: Click on any ingredient button in your sidebar inventory list to auto-populate the search box
 * Click **Search Recipes**
 
@@ -71,9 +68,8 @@ In the main screen display:
 
 | Issue / Error Message | Cause | How to Fix |
 | --- | --- | --- |
-| `No recipes found` | TheMealDB search requires exact ingredient names or terms. | Try searching single or common ingredients (e.g., `chicken` instead of `chicken thighs`). | 
-| `Network Error` | Invalid API URL or missing internet connection. | Make sure keys.py is in the root folder, use public TheMealDB API key = "1", or purchase premium API key. |
-| Flashing UI or Unresponsive Buttons | Stale browser cash or leftover Python background process. | Clear Streamlit's cache from your browser and/or restart VSCode/Terminal. | 
+| "No recipes found" | Either the search terms didn't match any recipes, or there was a network/API issue (invalid key, no internet). | Try single/common ingredients (e.g., `chicken` instead of `chicken thighs`). If that doesn't help, confirm `keys.py` is in the root folder and check your internet connection. |
+| Flashing UI or unresponsive buttons | Stale browser cache or leftover Python background process. | Clear Streamlit's cache from your browser and/or restart VSCode/Terminal. | 
 
 ---
 
