@@ -28,7 +28,7 @@ DinnersReady is a Streamlit-based web application using TheMealDB API to help us
 ## Environment Setup and Deployment
 
 ### Python Version and Dependencies
-* Python version: Tested and build on Python 3.13
+* Python version: Tested and built on Python 3.13
 * Core libraries:
   * `streamlit` - Web framework
   * `pandas` - CSV parsing for inventory and data manipulation
