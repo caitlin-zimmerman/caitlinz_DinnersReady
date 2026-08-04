@@ -29,7 +29,7 @@ with st.sidebar:
 
     ## Simple 'Add Item' at top of table
     col1, col2 = st.columns([2.5, 1])
-    new_item = col1.text_input("Ingredient", placeholder="e.g. zucchini", label_visibility="collapsed", key="add_item_name")
+    new_item = col1.text_input("Ingredient", placeholder="e.g. Zucchini", label_visibility="collapsed", key="add_item_name")
     new_quantity = col2.number_input("Quantity", min_value=1, value=1, step=1, label_visibility="collapsed", key="add_item_quantity")
     
     if st.button("+ Add Ingredient", width='stretch', type="primary"):
