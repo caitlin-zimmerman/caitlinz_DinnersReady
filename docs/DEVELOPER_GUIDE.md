@@ -120,19 +120,19 @@ API calls are wrapped with `@st.cache_data(ttl=3600)` to optimize load times and
 
 ### Minor Issues
 
-* 1. TheMealDB multi-ingredient strictness: 
+1. TheMealDB multi-ingredient strictness: 
    * Issue: The v2 API endpoint performs strict matching across the provided ingredients. If three ingredients are provided and the recipe doesn't contain all three, the API returns `None`.
    * Mitigation: A fallback loop in `utils/api.py` searches using the first target ingredient if the multi-search returns empty.
 
-* 2. API calls on rerun: 
+2. API calls on rerun: 
    * Issue: API calls fire for every recipe result on every rerun, not just expanded cards.
 
-* 3. Error handling: 
+3. Error handling: 
    * Issue: Network / API failures are indistinguishable in the web app from "No recipes found." 
 
 ### Major Limitations
 
-* 1. Local CSV file:
+1. Local CSV file:
    * Issue: User sessions modify the same local `data/inventory.csv` file, therefore it is not appropriate for multi-user access
    * Workaround: Replace `utils/inventory.py` with a SQL database
 
@@ -140,20 +140,17 @@ API calls are wrapped with `@st.cache_data(ttl=3600)` to optimize load times and
 
 ## Future Development Roadmap
 
-### 1. Database handling: 
-* Transition `data/inventory.csv` to a SQL solution to support multi-user accounts
+1. Database handling: 
+   * Transition `data/inventory.csv` to a SQL solution to support multi-user accounts
 
-### 2. Pantry auto-deduction: 
-* Add a "Cooked This" button inside the expanded recipe cards that will subtract the used quantities of ingredients from `inventory_df`
+2. Pantry auto-deduction: 
+   * Add a "Cooked This" button inside the expanded recipe cards that will subtract the used quantities of ingredients from `inventory_df`
 
-### 3. Bulk ingredient upload (grocery receipt)
-* Add a way to upload everything you purchased from your online grocery receipt or order
+3. Bulk ingredient upload (grocery receipt)
+   * Add a way to upload everything you purchased from your online grocery receipt or order
 
-### 4. Add expiration date trackers to ingredients
-* Receive alerts to upcoming expiration dates on ingredients in order to prioritize what needs to be used first
+4. Add expiration date trackers to ingredients
+   * Receive alerts to upcoming expiration dates on ingredients in order to prioritize what needs to be used first
 
-### 5. Appropriate unit measurements for ingredients
-* Add a way to add ingredients and modify their quantities based on applicable units of measurement (e.g., herbs, liquids)
-
-
-
+5. Appropriate unit measurements for ingredients
+   * Add a way to add ingredients and modify their quantities based on applicable units of measurement (e.g., herbs, liquids)
